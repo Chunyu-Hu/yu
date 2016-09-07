@@ -28,11 +28,11 @@ struct test_description {
         int duration;
         char res[8];
         int date;
-        #ifdef __GENKSYMS__
+#ifdef __GENKSYMS__
         int hiddend_data1;
         int hiddend_data2;
         int hiddend_data3;
-        #endif
+#endif
 };
 
 static struct test_description base_lib_desc;
@@ -52,7 +52,9 @@ static void test_defer_it(struct work_struct* work)
 
 int test_init_workqueue(void)
 {
-        test_cleanup_wq = create_singlethread_workqueue("test_cleanups");
+	char hello[1024] = {"abc"};
+	test_cleanup_wq = alloc_ordered_workqueue("%s", WQ_MEM_RECLAIM, hello);
+        test_cleanup_wq = create_singlethread_workqueue(hello);
         if (WARN_ON(!test_cleanup_wq))
 		        return -ENOMEM;
         return 0;
@@ -93,7 +95,7 @@ EXPORT_SYMBOL(test_dump_nodelist);
 int init_lib(void)
 {
         test_defer_it(&deferred_probe_work);
-	    return 0;
+	return 0;
 }
 
 void exit_lib(void)
