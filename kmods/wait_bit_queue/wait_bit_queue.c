@@ -43,6 +43,7 @@ static void wait_for_kmod_quit(void *data)
 	wqh = bit_waitqueue(&bit_storage, WAIT_BIT_HERE);
 
 	while (kmod_test_counter == 0) {
+		pr_info("beat ... ...");
 		__wait_on_bit(wqh, &wq, bit_wait,
 			      TASK_INTERRUPTIBLE);
 	}
