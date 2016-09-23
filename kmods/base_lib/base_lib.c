@@ -14,6 +14,12 @@ extern struct list_head tasks;
 static struct workqueue_struct *test_cleanup_wq;
 static int really_do = 0;
 
+/*
+ * Syncup between mutiple kmods.
+ */
+static int kmod_test_counter;
+EXPORT_SYMBOL(kmod_test_counter);
+
 static void deferred_probe_work_func(struct work_struct *work)
 {
         struct device *dev;
