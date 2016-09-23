@@ -7,7 +7,7 @@
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 
-#define WAIT_FLAG_HERE 100
+#define WAIT_FLAG_HERE 0
 /*
  * Wait bit for range of 32 bit.
  */
