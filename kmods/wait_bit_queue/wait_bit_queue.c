@@ -60,8 +60,6 @@ static void activate_kmod_current(unsigned long data)
 	while (loop--) {
 		pr_info("looping ... %d", 100 - loop);				
 		msleep(100);
-		tasklet_schedule(t);
-		schedule();
 	}
 	/* Activate insmod process*/
 	kmod_test_counter = 1;
