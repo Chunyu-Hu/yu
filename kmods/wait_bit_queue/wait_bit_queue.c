@@ -16,6 +16,11 @@ static int bit_storage;
 static spinlock_t m_lock;
 
 /*
+ * Can this be in stack and safe?
+ * */
+DEFINE_WAIT_BIT(wq, &bit_storage, WAIT_BIT_HERE);
+
+/*
  * For activating the current insmod process.
  */
 static struct tasklet_struct tasklet_activate_waiter;
@@ -33,18 +38,19 @@ __sched int bit_wait(struct wait_bit_key *word, int mode)
 
 static void wait_for_kmod_quit(void *data)
 {
-	DEFINE_WAIT_BIT(wq, &bit_storage, WAIT_BIT_HERE);
 	wait_queue_head_t *wqh;
 
 	pr_info("waiting ... , sizeof(wq) == %lu", sizeof(wq));
-	pr_info("bit_nr == %d, flags == %lu", wq.key.bit_nr,
-			(unsigned long)wq.key.flags);
+	pr_info("bit_nr == %d, flags == %p", wq.key.bit_nr,
+				wq.key.flags);
 
 	wqh = bit_waitqueue(&bit_storage, WAIT_BIT_HERE);
 
 	while (kmod_test_counter == 0) {
+		pr_info("waiting ... ...");
 		__wait_on_bit(wqh, &wq, bit_wait,
 			      TASK_INTERRUPTIBLE);
+		pr_info("waiting finish ... ...");
 	}
 }
 
