@@ -11,7 +11,7 @@
 /*
  * Wait bit for range of 32 bit.
  */
-#define WAIT_BIT_HERE  31
+#define WAIT_BIT_HERE  0
 static int bit_storage;
 static spinlock_t m_lock;
 
@@ -46,6 +46,7 @@ static void wait_for_kmod_quit(void *data)
 		__wait_on_bit(wqh, &wq, bit_wait,
 			      TASK_INTERRUPTIBLE);
 	}
+	pr_info("end ... ...");
 }
 
 static void activate_kmod_current(unsigned long data)
@@ -65,6 +66,7 @@ static void activate_kmod_current(unsigned long data)
 	kmod_test_counter = 1;
 
 	wqh = bit_waitqueue(&bit_storage, WAIT_BIT_HERE);
+	pr_info("waking ... ...");
 	__wake_up_bit(wqh, &bit_storage, WAIT_BIT_HERE);
 }
 
