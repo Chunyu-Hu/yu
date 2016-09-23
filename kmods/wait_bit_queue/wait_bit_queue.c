@@ -40,7 +40,7 @@ static void wait_for_kmod_quit(void *data)
 	pr_info("bit_nr == %d, flags == %lu", wq.key.bit_nr,
 			(unsigned long)wq.key.flags);
 
-	wqh = bit_waitqueue(&bit_waitqueue, WAIT_BIT_HERE);
+	wqh = bit_waitqueue(&bit_storage, WAIT_BIT_HERE);
 
 	while (kmod_test_counter == 0) {
 		__wait_on_bit(wqh, &wq, bit_wait,
