@@ -22,13 +22,23 @@ static struct tasklet_struct tasklet_activate_waiter;
 
 static int volatile kmod_test_counter;
 
+/* This is not defined before 7.2, fall back to this one*/
+__sched int bit_wait(struct wait_bit_key *word, int mode)
+{
+	schedule();
+	if (signal_pending_state(mode, current))
+		return -EINTR;
+	return 0;
+}
+
 static void wait_for_kmod_quit(void *data)
 {
 	DEFINE_WAIT_BIT(wq, &bit_storage, WAIT_BIT_HERE);
 	wait_queue_head_t *wqh;
 
 	pr_info("waiting ... , sizeof(wq) == %lu", sizeof(wq));
-	pr_info("bit_nr == %d, flags == %lu", wq.key.bit_nr, (unsigned long)wq.key.flags);
+	pr_info("bit_nr == %d, flags == %lu", wq.key.bit_nr,
+			(unsigned long)wq.key.flags);
 
 	wqh = bit_waitqueue(&bit_waitqueue, WAIT_BIT_HERE);
 
