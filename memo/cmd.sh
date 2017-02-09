@@ -9,3 +9,6 @@
 # wget https://password.corp.redhat.com/RH-IT-Root-CA.crt
 # update-ca-trust force-enable
 # update-ca-trust extract
+
+# Download whole directory, not html files. like ftp download.
+wget -q -c -r -np -k -L -nH -E --reject html http://ibm-x3250m4-03.rhts.eng.pek2.redhat.com/uapi_sysctl/2.6.32-642.el6-2.6.32-693.el6/
