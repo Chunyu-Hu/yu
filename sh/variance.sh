@@ -20,10 +20,10 @@ awk \
 END {
 	ave=sum/NR
 	for(i=0; i<NR; i++) {
-		s+=(a[$i]-ave)*(a[$i]-ave)
+		s+=(a[i]-ave)*(a[i]-ave)
 	}
+	s=s/NR
 	s=sqrt(s);
-	printf"%s\t%s\t%s\t%s\t%s\n", "min", "max", "ave", "sum" ,"variance"
-	printf"%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n", min, max, ave, sum, s/ave;
+	printf"%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n", min, max, ave, sum, s;
 	sum=0;
 }'
