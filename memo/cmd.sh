@@ -12,3 +12,5 @@
 
 # Download whole directory, not html files. like ftp download.
 wget -q -c -r -np -k -L -nH -E --reject html http://ibm-x3250m4-03.rhts.eng.pek2.redhat.com/uapi_sysctl/2.6.32-642.el6-2.6.32-693.el6/
+wget -q -c -r -np -k -L -nH -E --reject html --cut-dirs 1 -P $mnt_tmpdir ${http_link}/
+
