@@ -28,21 +28,13 @@ thr_1=0
 
 function Usage()
 {
-	echo $0 "< run | cal > [opts]"
 	case $1 in
-	run)
-		echo "$0 run [opts]
-		smp_nr per second
+	run|*)
+		echo "$0 run [opts] <cmd>
+Execute nr <cmd> per second
 opts:
     -d | --duration                       How long to run.
-    -i | --interval                       Smp numbers per second."
-	;;
-	cal)
-		echo "$0 cal [cmd]
-		calculate interval of cmd
-opts:
-    -t | --duration                       How long to run.
-    -s | --smp                            Smp numbers per second."
+    -t | --tps                            Smp numbers per second."
 	;;
 	esac
 	exit
@@ -224,7 +216,6 @@ function Main()
 			-d | --duration) duartion=$2; shift 2;;
 			-t | --tps) speed=$2; shift 2;;
 			-q | --quiet) quiet=1; shift;;
-			-v | --verbose) verbose=1; shift;;
 			-v | --verbose) verbose=1; shift;;
 			-*)	 Usage ;;
 			*)   cmd+="$1 "; shift;;
