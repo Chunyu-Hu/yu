@@ -2,8 +2,8 @@
 
 nr_cpu=$(grep -w processor /proc/cpuinfo | wc -l)
 cpu_start=1
-cpu_end=$((nr_cpu - 1))
-cpu_curr=$cpu_start
+export cpu_end=$((nr_cpu - 1))
+export cpu_curr=$cpu_start
 # seconds to run
 duration=120
 
@@ -25,6 +25,11 @@ thr_5=0
 thr_2=0
 thr_1=0
 
+trap "exec 9>&-;exec <9&-;exit" 2
+# smp number control
+mkfifo hello
+exec 9<>hello
+rm hello -f
 
 function Usage()
 {
@@ -43,6 +48,13 @@ opts:
 function LogInfo()
 {
 	echo "Info: [$(date +%h%m%s)]" $*
+}
+
+function LogDebug()
+{
+	if ((verbose)); then
+		echo $*
+	fi
 }
 
 function ParseDuration()
@@ -142,19 +154,51 @@ function SpeedControl()
 	usleep $us_sleep
 }
 
+function SpeedReport()
+{
+	true
+}
+
+function CalDuration()
+{
+    local start=$1
+	local end=${2:-$(date +%s.%N)}
+	local start_s=$(echo $start| cut -d '.' -f 1)
+	local start_ns=$(echo $start| cut -d '.' -f 2)
+	local end_s=$(echo $end| cut -d '.' -f 1)
+	local end_ns=$(echo $end| cut -d '.' -f 2)
+    local time_micro=$(( (10#$end_s-10#$start_s)*1000000 + (10#$end_ns/1000 - 10#$start_ns/1000) ))
+	local time_ms=$(expr $time_micro/1000  | bc)
+	#echo "$time_micro microseconds"
+    echo "$time_ms"
+}
+
 function RunOneBatch()
 {
 	for i in $(seq 1 $batch); do
-		run_cmd="taskset -c $cpu_curr ${cmd:-$default_cmd} &"
-		eval $run_cmd
+		local busy=0
+		local begin=$(date +%s.%N)
+		read -u9
+		local end=$(date +%s.%N)
+		local dr=$(CalDuration $begin $end)
+		if (( dr > 5)); then
+			LogDebug "Debug: Queue for token. blocked=$dr ms, jobs="$(jobs -p)""
+			buzy=1
+		fi
+		runs=$((runs+1))
 		((cpu_curr++))
 		if [ $cpu_curr -gt $cpu_end ]; then
 			cpu_curr=0
 		fi
-		((runs++))
+		LogDebug "Running: $i $cmd"
+		{
+			run_cmd="taskset -c $cpu_curr ${cmd:-$default_cmd}"
+			eval $run_cmd
+			echo 1>&9
+		} &
 	done
-	wait
 }
+
 function PrintInfo()
 {
 	((quiet)) && return
@@ -166,6 +210,7 @@ tps_whole=$tps_whole, tps=$tps, interval=$us_sleep, binterval=$batch_us_sleep"
 		echo
 	fi
 }
+
 # should be used in RunTest
 function RunOneWindow()
 {
@@ -173,8 +218,9 @@ function RunOneWindow()
 	while (( $(( $(date +%s) - win_start_time )) < wind )); do
 		RunOneBatch
 	done
-
-	tps=$((runs / wind))
+	wait
+	win_dur=$(( $(date +%s) - win_start_time ))
+	tps=$((runs / win_dur))
 	cur_duration=$(( $(date +%s) - start_time))
 
 	run_total=$((run_total + runs))
@@ -194,10 +240,16 @@ function RunTest()
 	wind=3
 	runs=0
 	run_total=0
-	batch=1
+	batch=10
+	cocurrent=10
 
 	start_time="$(date +%s)"
 	end_time=$((start_time + duration))
+	# smp number to $cocurrent every moment.
+	for c in $(seq 1 $cocurrent); do
+		echo "token" 1>&9
+	done
+
 	while (( $(date +%s) < end_time )); do
 		RunOneWindow
 	done
