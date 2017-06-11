@@ -7,7 +7,7 @@ export cpu_curr=$cpu_start
 # seconds to run
 duration=120
 
-loop=1
+loop=10
 
 #jitter control
 dt_25=0
@@ -86,30 +86,41 @@ function short_loop()
 	done
 }
 
+function AdjustUsleep()
+{
+	# Begin to reduce tokens to let fewer process to run
+	if ((us_sleep > 500000)); then
+		if ((cocurrent > 1)); then
+			read -u9
+			((cocurrent--))
+		fi
+		((us_sleep > 1000000)) && us_sleep=950000
+	fi
+}
+
 function SpeedDown()
 {
 	if ((delta > 25)); then
 		((dt_25 > thr_25)) && us_sleep=$((us_sleep + 500000)) &&
-			batch=$((batch - 4)) && dt_10=0 || ((dt_25++))
-			((batch < 0 )) && batch=1 
+		dt_10=0 || ((dt_25++))
+		((batch > 2)) && batch=$((batch - 2)) 
+		AdjustUsleep
 	elif ((delta > 10)); then
 		((dt_10 > thr_10))  && us_sleep=$((us_sleep + 500000)) &&
-		dt_10=0 || ((dt_10++))
+		dt_10=0 && loop=$((loop+20)) || ((dt_10++))
+		((batch > 5)) && batch=$((batch -1))
+		AdjustUsleep
 	elif ((delta > 5)); then
 		((dt_5 > thr_5))  && us_sleep=$((us_sleep + 250000)) &&
-		dt_5=0 || ((dt_5++))
+		dt_5=0 && loop=$((loop+10)) || ((dt_5++))
+		AdjustUsleep
 	elif ((delta >= 2)); then
 		((dt_2 > thr_2))  && us_sleep=$((us_sleep + 120000)) &&
-		dt_2=0 || ((dt_2++))
+		dt_2=0 && loop=$((loop+5))|| ((dt_2++))
+		AdjustUsleep
 	else
-		((dt_1 > thr_1)) && batch_us_sleep=0 &&
+		((dt_1 > thr_1)) && loop=$((loop + 1)) &&
 		dt_1=0 || ((dt_1++))
-	fi
-	if ((us_sleep > 1000000)); then
-		batch=$((batch - 3))
-		if ((batch < 0)); then
-			batch=1
-		fi
 	fi
 }
 
@@ -148,7 +159,7 @@ function SpeedControl()
 		SpeedUp $*
 	fi
 	if ((speed > 50)); then
-		loop=1
+		loop=0
 		us_sleep=0
 	fi
 	usleep $us_sleep
@@ -196,31 +207,29 @@ function RunOneBatch()
 			eval $run_cmd
 			echo 1>&9
 		} &
+		short_loop
 	done
+	wait
 }
 
 function PrintInfo()
 {
 	((quiet)) && return
 	echo -n "Running: $cmd (total: $run_total) "
-	if ((verbose)); then
-		echo "Batch=$batch, speed=$speed, duration=$cur_duration, run_total=$run_total, \
-tps_whole=$tps_whole, tps=$tps, interval=$us_sleep, binterval=$batch_us_sleep"
-	else
-		echo
-	fi
+	echo "Batch=$batch, speed=$speed, duration=$cur_duration, run_total=$run_total, \
+tps_whole=$tps_whole, tps=$tps, interval=$us_sleep, binterval=$loop, smp=$cocurrent"
 }
 
 # should be used in RunTest
 function RunOneWindow()
 {
 	win_start_time="$(date +%s)"
+	win_start_time_ns="$(date +%s.%N)"
 	while (( $(( $(date +%s) - win_start_time )) < wind )); do
 		RunOneBatch
 	done
-	wait
-	win_dur=$(( $(date +%s) - win_start_time ))
-	tps=$((runs / win_dur))
+	win_dur=$(CalDuration $win_start_time_ns)
+	tps=$((runs / wind))
 	cur_duration=$(( $(date +%s) - start_time))
 
 	run_total=$((run_total + runs))
@@ -228,7 +237,6 @@ function RunOneWindow()
 
 	PrintInfo
 	SpeedControl
-
 	runs=0
 }
 
@@ -237,7 +245,7 @@ function RunTest()
 	LogInfo "start test run ..."
 
 	us_sleep=100000
-	wind=3
+	wind=2
 	runs=0
 	run_total=0
 	batch=10
@@ -281,5 +289,5 @@ function Main()
 	esac
 }
 
-Main $@
+Main "$@"
 
