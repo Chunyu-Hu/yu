@@ -1,0 +1,20 @@
+1. Live patching running kernel
+kpatch is a live patching tech to live patch running kernel to fix bugs.
+With kpatch, user don't  need a reboot to get kernel bug fixed. In rhel7,
+it's called kpatch. On upstream, it's called livepatch.
+
+2. kpatch resolves emergency kernel bugs for customer.
+Customer have requested and got lots of kernel security bug fixes with
+kpatch-patch in rhel7. kpatch meets customer's non-reboot requirement.
+
+3. Test procedure.
+The test of kpatch(live patching) is urgent, totally 24 hours from
+request to release. With CI, test starts as early as  package is built.
+And closely communication with devel/qe team is needed.
+
+4. How does livepatching work.
+Introduce the basic theory of kpatch live patching.
+
+5.A demo to show how kpatch work.
+Build a patch module and load it to see the difference in kernel behavior
+before and after patching.
