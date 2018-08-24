@@ -1,1 +1,0 @@
-cmd_/home/chuhu/Git/yu/kmods/livepatch/lpm.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/chuhu/Git/yu/kmods/livepatch/lpm.ko /home/chuhu/Git/yu/kmods/livepatch/lpm.o /home/chuhu/Git/yu/kmods/livepatch/lpm.mod.o ;  true
