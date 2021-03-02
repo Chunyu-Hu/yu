@@ -1,0 +1,2 @@
+CFLAGS=-fPIC ./configure --with-tlib=ncurses 
+https://github.com/vim/vim.git
