@@ -1,0 +1,42 @@
+
+    c : 类(class)
+    d : 宏(macro definition)
+    e : 枚举值(enumeator)
+    f : 函数(function)
+    g : 枚举类型名称
+    m : 类/结构/联合成员(member)
+    n : 命名空间(namespace)
+    p : 函数原型(function prototype)
+    s : 结构体名称(structure name)
+    t : 类型定义(typedef)
+    u : 联合名(union name)
+    v : 变量定义(variable defination)
+
+
+omniCpp_GlobalScopeSearch : 全局查找控制。0:禁止；1:允许(缺省)
+    OmniCpp_NamespaceSearch : 命名空间查找控制。
+        0 : 禁止查找命名空间
+        1 : 查找当前文件缓冲区内的命名空间(缺省)
+        2 : 查找当前文件缓冲区和包含文件中的命名空间
+    OmniCpp_DisplayMode : 类成员显示控制(是否显示全部公有(public)私有(private)保护(protected)成员)。
+        0 : 自动
+        1 : 显示所有成员
+    OmniCpp_ShowScopeInAbbr : 选项用来控制匹配项所在域的显示位置。缺省情况下，omni显示的补全提示菜单中总是将匹配项所在域信息显示在缩略信息最后一列。
+        0 : 信息缩略中不显示匹配项所在域(缺省)
+        1 : 显示匹配项所在域，并移除缩略信息中最后一列
+    OmniCpp_ShowPrototypeInAbbr : 是否是补全提示缩略信息中显示函数原型。
+        0 : 不显示(缺省)
+        1 : 显示原型
+    OmniCpp_ShowAccess : 是否显示访问控制信息('+', '-', '#')。0/1, 缺省为1(显示)
+    OmniCpp_DefaultNamespaces : 默认命名空间列表，项目间使用','隔开。
+    如：let OmniCpp_DefaultNamespaces = ["std', "MyNamespace"]
+    OmniCpp_MayCompleteDot : 在'.'号后是否自动运行omnicppcomplete给出提示信息。0/1, 缺省为1
+    OmniCpp_MayCompleteArray : 在"->"后是否自动运行omnicppcomplete给出提示信息。0/1, 缺省为1
+    OmniCpp_MayCompleteScope : 在域标识符"::"后是否自动运行omnicppcomplete给出提示信息。0/1, 缺省为0
+    OmniCpp_SelectFirstItem : 是否自动选择第一个匹配项。仅当"completeopt"不为"longest"时有效。
+        0 : 不选择第一项(缺省)
+        1 : 选择第一项并插入到光标位置
+        2 : 选择第一项但不插入光标位置
+    OmniCpp_LocalSearchDecl : 使用Vim标准查找函数/本地(local)查找函数。Vim内部用来在函数中查找变量定义的函数需要函数括号位于文本的第一列，而本地查找函数并不需要。
+
+
