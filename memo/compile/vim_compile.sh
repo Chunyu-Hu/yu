@@ -1,0 +1,1 @@
+  ./configure --with-features=huge --enable-rubyinterp --enable-pythoninterp --enable-python3interp --enable-perlinterp --enable-luainterp  --enable-gui=gtk3 --enable-gui=gnome3 --enable-cscope --host linux-x86_64-gcc --with-x --enable-multibyte LDFLAGS=" -L/usr/lib64/perl5/CORE/ -lperl" CFLAGS="-fPIC -lperl -L/usr/lib64/perl5/CORE/" 
