@@ -1,0 +1,1 @@
+python3 -c "from PyQt5.QtWidgets import QApplication; from PyQt5.QtGui import QFontDatabase; a = QApplication([]); print(QFontDatabase.systemFont(QFontDatabase.FixedFont).family())"
