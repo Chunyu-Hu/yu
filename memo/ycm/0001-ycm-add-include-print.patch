@@ -1,0 +1,28 @@
+From be1dabc1dbdafeda942d543cd4abd68adfd71e8f Mon Sep 17 00:00:00 2001
+From: Chunyu Hu <chuhu@redhat.com>
+Date: Sun, 3 Apr 2022 11:36:13 +0800
+Subject: [PATCH] ycm: add include print
+
+Signed-off-by: Chunyu Hu <chuhu@redhat.com>
+---
+ Makefile | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index 8c7de9a72ea2..a1743891c260 100644
+--- a/Makefile
++++ b/Makefile
+@@ -10,6 +10,10 @@ NAME = Superb Owl
+ # More info can be located in ./README
+ # Comments in this file are targeted only to the developer, do not
+ # expect to learn how to build the kernel reading this file.
++show-includes:
++	@$(foreach include, $(LINUXINCLUDE), echo $(include);)
++	@$(foreach include, $(USERINCLUDE), echo $(include);)
++
+ 
+ $(if $(filter __%, $(MAKECMDGOALS)), \
+ 	$(error targets prefixed with '__' are only for internal use))
+-- 
+2.35.1
+
