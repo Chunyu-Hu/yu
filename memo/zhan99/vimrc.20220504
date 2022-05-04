@@ -1,0 +1,912 @@
+
+"set tags=./tags;
+"set autochdir
+syntax on
+filetype plugin indent on    " required
+filetype plugin on
+" highlight search
+set hls
+" plugin management
+set nocompatible
+set backspace=indent,eol,start
+"set whichwrap+=<,>,h,l
+set hidden
+
+"set showcmd
+"set showmode
+set cmdheight=1
+"set timeout=500
+
+set nobackup
+set noswapfile
+set ruler
+set cursorline " 突出显示当前行
+"imap <TAB> <C-X><C-N>
+
+" create undo file
+set undolevels=1000 " how many undos
+set undoreload=10000 " number of lines to save for undo
+if v:version >= 730
+    set undofile     " keep a persistent backup file
+    set undodir=/home/vimundo/
+endif
+
+"set laststatus=2
+"set smarttab
+"离开插入模式后自动关闭预览窗口
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
+"colo evening
+set nu
+set autoindent
+set tabstop=4
+set shiftwidth=4
+set mouse=a
+"set encoding=utf-8
+set hlsearch
+
+let g:mapleader=','
+let g:mapLeader=','
+
+" 执行特定命令并保留光标位置及搜索历史
+function! Preserve(command)
+	let _s=@/
+	let l = line(".")
+	let c = col(".")
+	execute a:command
+	let @/=_s
+	call cursor(l, c)
+endfunction
+" 格式化全文
+function! FullFormat()
+	call Preserve("normal gg=G")
+endfunction
+
+if has("cscope")
+	"set csprg=/usr/bin/cscope
+	set csto=0
+	set cst
+	set nocsverb
+	" add any database in current directory
+	if filereadable("cscope.out")
+		cs add cscope.out
+	" else add database pointed to by environment
+	elseif $CSCOPE_DB != ""
+		cs add $CSCOPE_DB
+	endif
+	set csverb
+endif
+
+"autocmd VimEnter * exe 'au! FileExplorer *'
+" FZF Buffer Delete
+function! s:list_buffers() abort
+    redir => list
+    silent ls
+    redir END
+    return split(list, "\n")
+endfunction
+
+function! s:delete_buffers(lines) abort
+    " Use bdelete so buffers stay in locationlist
+    execute 'bdelete' join(map(a:lines, {_, line ->
+    split(line)[0]}))
+endfunction
+command! BD call fzf#run(fzf#wrap({ 'source': s:list_buffers(), 'sink*': { lines -> s:delete_buffers(lines) }, 'options': '--multi --reverse --bind ctrl-a:select-all+accept' }))
+
+
+map <F12> :!ctags -R --sort=yes --c++-kinds=+p --fields=+liaS --extras=+q .<CR>
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+
+nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+
+"nmap <C-\>s :scs find s <C-R>=expand("<cword>")<CR><CR>
+
+nmap <C-\><C-\>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\><C-\>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\><C-\>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\><C-\>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\><C-\>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\><C-\>i :vert scs find i <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-\><C-\>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
+nmap <C-\>n :cn<CR>
+nmap <C-\>p :cp<CR>
+
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+map <silent>,tb :TagbarToggle<cr> 
+
+map ,ee :tabnew ~/.vimrc <CR><CR>
+map ,te :tabnew ~/.tmux.conf <CR><CR>
+map ,qe :tabnew ~/.config/qutebrowser/config.py <CR><CR>
+map ,ss :source ~/.vimrc <CR><CR>
+map ,nd :NERDTree <CR>
+map ,qd :WMToggle <CR>
+map ,cc :cclose <CR>
+map ,qq :quitall <CR>
+map \1 :buf 1 <CR>
+"nnoremap <silent> <Leader>bl :ls<CR>:b<Space>
+"nnoremap <Leader>bj :b<Space>
+" copy and paste frmo clipboard
+vmap <C-c> "+y
+"vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <ESC>"+pa
+
+"new
+let g:miniBufExplSplitToEdge = 1
+
+"map <Leader>mf :MBEFocus<cr>
+"map <Leader>mt :MBEToggle<cr>
+"map <Leader>gp :MBEbp<cr>
+"map <Leader>gn :MBEbn<cr>
+"map <Leader>bb :MBEbd<cr>
+
+set rtp+=~/.vim/bundle/Vundle.vim
+"call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+call vundle#begin('~/vim_plugins')
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'mhinz/vim-startify'
+Plugin 'https://github.com/felixhummel/setcolors.vim'
+Plugin 'https://github.com/voldikss/vim-floaterm.git'
+Plugin 'https://github.com/tpope/vim-repeat.git'
+
+
+
+" plug-in for YCM
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'rdnetto/YCM-Generator'
+Plugin 'jeaye/color_coded'
+Plugin 'tenfyzhong/CompleteParameter.vim'
+Plugin 'https://github.com/kana/vim-operator-user.git'
+Plugin 'https://github.com/rhysd/vim-clang-format.git'
+Plugin 'liuchengxu/vista.vim'
+Plugin 'https://github.com/MattesGroeger/vim-bookmarks.git'
+
+" super-tab
+Plugin 'ervandew/supertab'
+
+" air-line
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+"Plugin 'https://github.com/vim-ctrlspace/vim-ctrlspace.git'
+
+" NerdTree
+Plugin 'scrooloose/nerdtree'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+
+"Plugin 'ctags.vim'
+"Plugin 'https://github.com/fholgado/minibufexpl.vim.git'
+Plugin 'https://github.com/airblade/vim-gitgutter.git'
+
+" color
+Plugin 'flazz/vim-colorschemes'
+Plugin 'altercation/vim-colors-solarized'
+"Plugin 'morhetz/gruvbox'
+Plugin 'dracula/vim'
+
+" syntastic
+"Plugin 'scrooloose/syntastic'
+Plugin 'fedorenchik/qt-support.vim'
+Plugin 'xaizek/vim-qthelp'
+Plugin 'tyru/open-browser.vim'
+Plugin 'dbeniamine/vim-compile'
+Plugin 'https://github.com/voldikss/vim-translate-me'
+"Plugin 'https://github.com/xuhdev/SingleCompile.git'
+Plugin 'https://github.com/908th/vim-auto-save'
+Plugin 'https://github.com/jdhao/better-escape.vim.git'
+Plugin 'https://github.com/bfrg/vim-cpp-modern'
+Plugin 'https://github.com/junegunn/fzf.git'
+Plugin 'https://github.com/ggreer/the_silver_searcher'
+Plugin 'https://github.com/BurntSushi/ripgrep'
+Plugin 'https://github.com/sharkdp/bat'
+Plugin 'https://github.com/Yggdroot/LeaderF.git', { 'do': ':LeaderfInstallCExtension' }
+Plugin 'https://github.com/junegunn/fzf.vim.git'
+Plugin 'https://github.com/d86leader/vim-cpp-helper.git'
+
+Plugin 'https://github.com/jiangmiao/auto-pairs.git'
+
+"Plugin 'thinktainer/omnicppcomplete'
+Plugin 'https://github.com/frazrepo/vim-rainbow.git'
+
+
+Plugin 'https://github.com/mg979/vim-visual-multi.git'
+Plugin 'https://github.com/haya14busa/vim-easyoperator-line.git'
+Plugin 'https://github.com/haya14busa/vim-easyoperator-phrase.git'
+Plugin 'https://github.com/tpope/vim-fugitive.git'
+Plugin 'https://github.com/preservim/nerdcommenter.git'
+Plugin 'https://github.com/junegunn/vim-easy-align.git'
+Plugin 'https://github.com/WolfgangMehner/bash-support.git'
+Plugin 'https://github.com/preservim/tagbar.git'
+Plugin 'https://github.com/liuchengxu/vim-which-key.git'
+Plugin 'https://github.com/easymotion/vim-easymotion.git'
+Plugin 'haya14busa/incsearch.vim'
+Plugin 'https://github.com/haya14busa/incsearch-easymotion.vim'
+Plugin 'https://github.com/haya14busa/incsearch-fuzzy.vim.git'
+Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'tmux-plugins/vim-tmux'
+Plugin 'https://github.com/andymass/vim-matchup.git'
+Plugin 'https://github.com/makerj/vim-pdf.git'
+
+"cscope
+" Plugin 'steffanc/cscopemaps.vim'
+" Plugin 'cscope.vim'
+
+"Latex
+"  Plugin 'lervag/vimtex'
+
+
+call vundle#end()
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+
+" Plugin Tagbar
+map <leader>nd :NERDTreeToggle<CR>
+
+let g:NERDTree_title = "[NERDTree]"
+let NERDTreeIgnore = ['\.pyc','\~$','\.swp', '\.cmd', '\.o']
+let g:NERDTreeMapJumpPrevSibling = "<Up>"
+let g:NERDTreeMapJumpNextSibling = "<Down>"
+let g:NERDTreeDirArrows = 2
+let g:NERDTreeDirArrowExpandable = '►'
+let g:NERDTreeDirArrowCollapsible = '▼'
+let NERDTreeAutoCenter = 1
+let NERDTreeShowLineNumbers = 1
+let NERDTreeShowHidden = 1
+let NERDTreeWinSize = 30
+let NERDTreeMinimalUI=0
+let NERDTreeHighlightCursorline=1
+"当前目录的设定
+let NERDTreeChDirMode = 2
+" 在终端启动vim时，共享NERDTree
+let g:nerdtree_tabs_open_on_console_startup=1
+"let g:NERDTreeShowIgnoredStatus = 1
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+
+" Plugin Tagbar
+let g:Tagbar_title = "[Tagbar]"
+let g:tagbar_compact = 0
+let g:tagbar_autoshowtag = 1
+let g:tagbar_iconchars = ['▸', '▾']
+let g:tagbar_left = 1
+"let g:tagbar_vertical = 30
+let g:tagbar_width = max([30, winwidth(0) / 5])
+
+
+" Use Nerdtree Tagbar without winmanager
+let g:RAW_Nerdtree_Tagbar = 1
+if g:RAW_Nerdtree_Tagbar
+	function! ToggleNerdtreeTagbar()
+		let NERDTree_close = (bufwinnr('NERD_tree') == -1) 
+		let Tagbar_close   = (bufwinnr('__Tagbar__') == -1) 
+
+		if NERDTree_close && Tagbar_close && g:tagbar_left
+            NERDTreeToggle
+            TagbarToggle
+			wincmd K
+			wincmd b
+			wincmd L
+			wincmd h
+			exe 'vertical resize 30'
+        elseif NERDTree_close && Tagbar_close
+            NERDTreeToggle
+            TagbarToggle
+            return
+			"exe 'vertical resize 30'
+		else 
+			TagbarClose
+			NERDTreeClose
+		endif
+	endfunction
+
+	function! ToggleNerdtreeVista()
+
+		let NERDTree_close = (bufwinnr('NERD_tree') == -1) 
+		let Vista_close   = (bufwinnr('__vista__') == -1) 
+
+		if NERDTree_close && Vista_close && g:tagbar_left
+            NERDTreeToggle
+			wincmd K
+			wincmd b
+			wincmd L
+			wincmd h
+			exe 'vertical resize 30'
+        elseif NERDTree_close && Vista_close
+            NERDTreeToggle
+            Vista!!
+            wincmd b
+            wincmd h
+            return
+			"exe 'vertical resize 30'
+		else 
+            Vista!!
+			NERDTreeClose
+		endif
+	endfunction
+	nmap ,wm :call ToggleNerdtreeTagbar()<CR>
+	nmap ,vs :call ToggleNerdtreeVista()<CR>
+end
+
+let g:SuperTabDefaultCompletionType="context"  
+let g:SuperTabRetainCompletionType=2
+let g:SuperTabDefaultCompletionType=""
+
+let OmniCpp_NamespaceSearch = 1
+let OmniCpp_GlobalScopeSearch = 1
+let OmniCpp_ShowAccess = 1
+let OmniCpp_ShowPrototypeInAbbr = 1 " 显示函数参数列表
+let OmniCpp_MayCompleteDot = 1   " 输入 .  后自动补全
+let OmniCpp_MayCompleteArrow = 1 " 输入 -> 后自动补全
+let OmniCpp_MayCompleteScope = 1 " 输入 :: 后自动补全
+let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
+
+
+let g:qthelp_browser = 'qutebrowser &>/dev/null'
+let g:netrw_nogx = 1
+nmap gx <Plug>(openbrowser-smart-search)
+vmap gx <Plug>(openbrowser-smart-search)
+
+" Plugin auto-save"
+let g:auto_save = 1
+let g:auto_save_events = ["InsertLeave", "TextChanged"]
+let g:auto_save_silent = 0
+
+let g:openbrowser_browser_commands = [
+\   {'name': 'qutebrowser',
+\    'args': ["{browser}", "{uri}"]}
+\]
+
+let g:openbrowser_search_engines = extend(
+\ get(g:, 'openbrowser_search_engines', {}),
+\ {
+\   'cppreference': 'https://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search={query}',
+\   'qt': 'https://doc.qt.io/qt-5/search-results.html?q={query}',
+\ },
+\ 'keep'
+\)
+nnoremap <silent> <leader>cpp :call openbrowser#smart_search(expand('<cword>'), "cppreference")<CR>
+nnoremap <silent> <leader>qt :call openbrowser#smart_search(expand('<cword>'), "qt")<CR>
+nnoremap <C-\>qs :call openbrowser#smart_search(expand('<cword>'), "qt")<CR>
+nnoremap <C-\>qh :QHelpOnThis<CR><CR>:redr!<CR>
+nnoremap <leader>qs :call openbrowser#smart_search(expand('<cword>'), "qt")<CR>
+nnoremap <leader>qh :QHelpOnThis<CR><CR>:redr!<CR>
+
+" plugin vim-compile
+function MyStarterFunction(cmd,type)
+    if (a:type=='m') " Compilation: use makeprg and :Dispatch or :make
+        let &makeprg=a:cmd
+        if exists("g:loaded_dispatch")
+            let l:launcher=":Dispatch"
+        else
+            let l:launcher=":make"
+        endif
+    else " Normal command
+        let l:cmd=a:cmd
+        if exists("g:loaded_dispatch")
+            let l:launcher=":Start"
+            if (a:cmd=~'^.*&\s*$') " Let Dispatch handle background commands
+                let l:cmd=substitute(a:cmd,'&\s*$','','')
+                let l:launcher.="!"
+            endif
+        else " Simple shell escape
+            let l:dir = expand("%:p:h") . '/*'
+            let l:dir_check = l:dir =~ "/Qdemos/"
+            let l:e = ""
+            if l:dir_check
+                let l:binary = filter(glob(l:dir, 0, 1), {i,v-> executable(v) && !isdirectory(v)})
+                for l:e in l:binary
+                    let l:ft = system("file ".l:e)
+                    if l:ft =~ "ELF"
+                        break
+                    endif
+                endfor
+                let l:binary[0] = l:e
+                "let l:launcher = ":!" . "find" . " " . l:dir . "-type f -executable -exec {}" . " \\;"
+            else
+                let l:binary = []
+            endif
+            if len(l:binary)
+                let l:launcher=":!" . " " . l:binary[0]
+            else
+                let l:launcher=":!" . "true"
+            endif
+        endif
+    endif
+    echom l:launcher
+    execute l:launcher
+    "redr
+endfunction
+
+let g:VimCompileCustomStarter=function("MyStarterFunction")
+let g:VimCompileCustomBuilder='build.sh'
+let g:VimCompileCustomBuilderCompile='./build.sh'
+let g:VimCompileCustomBuilderExec='./build.sh view'
+let g:VimCompileCustomBuilderClean='./build.sh clean'
+
+au FileType c,cpp,objc,objcpp call rainbow#load()
+let g:rainbow_active = 1
+
+let g:better_escape_shortcut = ['fk', 'jk', 'kj', 'kf']
+let g:better_escape_debug = 0
+let g:better_escape_interval = 80
+
+
+" Plugin YouCompleteMe
+"let g:ycm_key_list_select_completion=['<c-n>']
+"let g:ycm_key_list_previous_completion=['<c-p>']
+"let g:ycm_key_invoke_completion='<C-\>'
+let g:ycm_server_python_interpreter='/usr/bin/python'
+let g:ycm_global_ycm_extra_conf='/home/chuhu/.ycm_extra_conf.py'
+let g:ycm_collect_indentifiers_from_tags_files=1
+let g:ycm_seed_identifiers_with_syntax=1
+"let g:ycm_extra_conf_globlist = ['~/*','~/*']
+let g:ycm_confirm_extra_conf=0
+let g:ycm_autoclose_preview_window_after_completion=1
+let g:ycm_complete_in_comments = 1
+let g:ycm_complete_in_strings = 1
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+"let g:ycm_min_num_identifier_candidate_chars = 0
+let g:ycm_show_diagnostics_ui = 0
+set completeopt=menuone,menu,longest
+"set completeopt=menuone,menu
+"highlight PMenu ctermfg=10 ctermbg=18 guifg=white guibg=Blue cterm=underline
+"highlight PMenuSel ctermfg=10 ctermbg=18 guifg=white guibg=Blue cterm=underline
+let g:ycm_add_preview_to_completeopt = 0
+let g:ycm_filetype_whitelist = { 
+			\ "h":1,
+			\ "c":1,
+			\ "cpp":1, 
+			\ "sh":1,
+			\ }
+"let g:ycm_goto_buffer_command='new-or-existing-tab'
+let g:ycm_key_list_stop_completion='<C-y>'
+nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+nnoremap <leader>jdf :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>jdc :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>st :YcmCompleter GetType<CR>
+
+" bash ycmd lsp server
+source /home/chuhu/Git/lsp-examples/vimrc.generated
+
+
+"let g:ycm_semantic_triggers =  {
+"			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+"			\ 'cs,lua,javascript': ['re!\w{2}'],
+"			\ }
+
+" 跳到定义或声明
+"nnoremap <F2> :YcmCompleter GoToDefinitionElseDeclaration<CR>
+" 强制进行编译
+"nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+
+let g:AutoPairs = {'[':']', '{':'}',"'":"'",'"':'"', '`':'`'}
+inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
+
+" Translate
+nmap <silent> <Leader>t <Plug>Translate
+vmap <silent> <Leader>t <Plug>TranslateV
+" Leader>w 翻译光标下的文本，在窗口中显示
+nmap <silent> <Leader>w <Plug>TranslateW
+vmap <silent> <Leader>w <Plug>TranslateWV
+" " Leader>r 替换光标下的文本为翻译内容
+nmap <silent> <Leader>r <Plug>TranslateR
+vmap <silent> <Leader>r <Plug>TranslateRV
+
+
+"smap \po <Plug>(complete_parameter#overload_down)
+"autocmd BufRead *.html map <F5> :exe ':silent !open -a /Applications/Firefox.app %'<CR>:redr!<CR>
+
+" Plugin Complete Parameter
+let g:complete_parameter_log_level = 0
+let g:complete_parameter_py_remove_default = 0
+inoremap <silent><expr>( complete_parameter#pre_complete("()")
+imap <c-\>h <Plug>(complete_parameter#goto_next_parameter)
+imap <c-\>l <Plug>(complete_parameter#goto_previous_parameter)
+smap <c-\>h <Plug>(complete_parameter#goto_next_parameter)
+smap <c-\>l <Plug>(complete_parameter#goto_previous_parameter)
+
+if !has('gui_running')
+	map "in Insert mode, type Ctrl+v Alt+n here" <A-n>
+endif
+
+let g:VM_default_mappings = 0
+let g:VM_leader = '\\'
+let g:VM_theme                      = 'ocean'
+let g:VM_highlight_matches          = 'underline'
+let g:VM_maps                       = {}
+let g:VM_maps['Find Under']         = '<C-n>'
+let g:VM_maps['Find Subword Under'] = '<C-n>'
+let g:VM_maps['Select All']         = '<C-a>'
+let g:VM_maps['Select h']           = '\h'
+let g:VM_maps['Select l']           = '\l'
+let g:VM_maps['Add Cursor Up']      = '\N'
+let g:VM_maps['Add Cursor Down']    = '\n'
+let g:VM_maps['Add Cursor At Pos']  = '\c'
+let g:VM_maps['Add Cursor At Word'] = '\w'
+let g:VM_maps['Remove Region']      = 'Q'
+let g:VM_maps['Skip Region']        = 'q'     "跳过当前光标到下一个。
+let g:VM_maps["Select j"] 			= '\j'
+let g:VM_maps["Select k"] 			= '\k'
+let g:VM_maps['Undo']               = '\u'     "Undo.
+let g:VM_maps['Redo']               = '\U' "Redo.
+let g:multi_cursor_quit_key            = '<Esc>'
+"nmap \N <Plug>(VM-Add-Cursor-Up)
+
+nnoremap <silent> <leader>c} V}:call NERDComment('x', 'toggle')<CR>
+nnoremap <silent> <leader>c{ V{:call NERDComment('x', 'toggle')<CR>
+
+" PLUGIN: FZF
+nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader>fb :Buffers<CR>
+nnoremap <silent> <Leader>fi :Files<CR>
+nnoremap <silent> \fg :Rg<CR>
+nnoremap <Leader>fz :FZF 
+nnoremap <silent> <Leader>/ :BLines<CR>
+nnoremap <silent> <Leader>' :Marks<CR>
+nnoremap <silent> <Leader>g :Commits<CR>
+nnoremap <silent> <Leader>H :Helptags<CR>
+nnoremap <silent> <Leader>hh :History<CR>
+nnoremap <silent> <Leader>h: :History:<CR>
+nnoremap <silent> <Leader>h/ :History/<CR>
+set grepprg=rg\ --vimgrep\ --smart-case\ --follow
+
+" PLUGIN: LeaderF
+" don't show the help in normal mode
+"let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
+let g:Lf_ShortcutF = "<leader>ff"
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+let g:Lf_GtagsAutoGenerate = 1
+" popup mode
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PreviewInPopup = 1
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+set ambiwidth=double
+
+"noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+
+noremap \fb :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap \fa :<C-U><C-R>=printf("Leaderf! rg -e %s ", expand("<cword>"))<CR>
+" search visually selected text literally
+xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+noremap go :<C-U>Leaderf! rg --recall<CR>
+
+" should use `Leaderf gtags --update` first
+let g:Lf_GtagsAutoGenerate = 0
+let g:Lf_Gtagslabel = 'native-pygments'
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump --gtagslabel ctags", expand("<cword>"))<CR><CR>
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump --gtagslabel ctags", expand("<cword>"))<CR><CR>
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s --gtagslabel ctags", "")<CR><CR>
+noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s --gtagslabel ctags", "")<CR><CR>
+noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s --gtagslabel ctags", "")<CR><CR>
+
+" PLUGIN esatymotion
+map  ;f <Plug>(easymotion-bd-f)
+nmap ;f <Plug>(easymotion-overwin-f)
+" s{char}{char} to move to {char}{char}
+nmap ;s <Plug>(easymotion-overwin-f2)
+" Move to line
+map  ;L <Plug>(easymotion-bd-jk)
+nmap ;L <Plug>(easymotion-overwin-line)
+" Move to word
+map  ;w <Plug>(easymotion-bd-w)
+nmap ;w <Plug>(easymotion-overwin-w)
+
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)))))
+
+map z/ <Plug>(incsearch-easymotion-/)
+map z? <Plug>(incsearch-easymotion-?)
+map zg/ <Plug>(incsearch-easymotion-stay)
+
+function! s:config_easyfuzzymotion(...) abort
+  return extend(copy({
+  \   'converters': [incsearch#config#fuzzy#converter()],
+  \   'modules': [incsearch#config#easymotion#module()],
+  \   'keymap': {"\<CR>": '<Over>(easymotion)'},
+  \   'is_expr': 0,
+  \   'is_stay': 1
+  \ }), get(a:, 1, {}))
+endfunction
+
+noremap <silent><expr> ,/ incsearch#go(<SID>config_easyfuzzymotion())
+
+nnoremap <silent> \zz :WhichKey '<Space>'<CR>
+
+let g:mapleader = ','
+let g:maplocalleader = '\'
+nnoremap <silent> <leader>      :<c-u>WhichKey ','<CR>
+nnoremap <silent> <localleader> :<c-u>WhichKey  '\'<CR>
+nnoremap <leader> :<c-u>WhichKey  ','<CR>
+vnoremap <leader> :<c-u>WhichKeyVisual  ','<CR>
+let g:which_key_map =  {}
+map ,ww <C-W>w
+map ,wd <C-W>c
+map ,wl <C-W>l
+map ,wh <C-W>h
+let g:which_key_map[','] = {
+      \ 'name' : '+windows' ,
+      \ 'w' : ['<C-W>w'     , 'other-window']          ,
+      \ 'd' : ['<C-W>c'     , 'delete-window']         ,
+      \ '-' : ['<C-W>s'     , 'split-window-below']    ,
+      \ '|' : ['<C-W>v'     , 'split-window-right']    ,
+      \ '2' : ['<C-W>v'     , 'layout-double-columns'] ,
+      \ 'h' : ['<C-W>h'     , 'window-left']           ,
+      \ 'j' : ['<C-W>j'     , 'window-below']          ,
+      \ 'l' : ['<C-W>l'     , 'window-right']          ,
+      \ 'k' : ['<C-W>k'     , 'window-up']             ,
+      \ 'H' : ['<C-W>5<'    , 'expand-window-left']    ,
+      \ 'J' : [':resize +5'  , 'expand-window-below']   ,
+      \ 'L' : ['<C-W>5>'    , 'expand-window-right']   ,
+      \ 'K' : [':resize -5'  , 'expand-window-up']      ,
+      \ '=' : ['<C-W>='     , 'balance-window']        ,
+      \ 's' : ['<C-W>s'     , 'split-window-below']    ,
+      \ 'v' : ['<C-W>v'     , 'split-window-below']    ,
+      \ '?' : ['Windows'    , 'fzf-window']            ,
+      \ }
+"let g:which_key_map.1 = 'which_key_ignore'
+call which_key#register('w', "g:which_key_map")
+
+let g:tmux_navigator_no_mappings = 1
+nnoremap <silent> <c-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
+"nnoremap <silent> <c-p> :TmuxNavigatePrevious<cr>
+"nnoremap <silent> <c-k> :TmuxNavigateDown<cr>
+"nnoremap <silent> <c-j> :TmuxNavigateUp<cr>
+
+let g:clang_format#code_style = "google"
+let g:clang_format#auto_format = 0
+"autocmd FileType cpp ClangFormatAutoEnable
+"https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+" Use ClangFormatEchoFormattedCode for debug
+let g:clang_format#command = "/usr/bin/clang-format"
+let g:clang_format#style_options = {
+	            \ "AccessModifierOffset" : -4,
+            \ "AlwaysBreakTemplateDeclarations" : "true",
+            \ "Standard" : "C++11", 
+			\ "IndentWidth" : 4,
+			\ "TabWidth" : 4,
+			\ "ContinuationIndentWidth" : 4,
+			\ "PointerAlignment" : "Right",
+			\ "DerivePointerAlignment" : "false",
+			\ "AllowShortIfStatementsOnASingleLine" : "Never",
+            \ "AllowAllArgumentsOnNextLine" : "true",
+            \ "AllowAllParametersOfDeclarationOnNextLine" : "true",
+            \ "AllowShortBlocksOnASingleLine" : "Never",
+            \ "AllowShortCaseLabelsOnASingleLine" : "false",
+            \ "AllowShortEnumsOnASingleLine" : "false",
+            \ "AllowShortFunctionsOnASingleLine" : "Empty",
+            \ "BreakBeforeBraces" : "Custom",
+            \ "BraceWrapping" : {
+                \ "AfterClass" : "true", 
+                \ "AfterFunction" : "true", 
+                \ "AfterCaseLabel" : "true" ,
+                \ "AfterEnum" : "true" ,
+                \ "AfterNamespace" : "true" ,
+                \ "AfterStruct" : "true" ,
+                \ "AfterUnion" : "true" ,
+                \ "AfterExternBlock" : "true" ,
+                \ "BeforeElse" : "false" ,
+                \ }
+			\ }
+
+" map to <Leader>cf in C++ code
+autocmd FileType cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
+autocmd FileType cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
+" if you install vim-operator-user
+autocmd FileType cpp,objc map <buffer><Leader>x <Plug>(operator-clang-format)
+" Toggle auto formatting:
+nmap <Leader>C :ClangFormatAutoToggle<CR>
+
+
+"Toggle YouCompleteMe on and off with F3
+"function Toggle_ycm()
+"Toggle YouCompleteMe on and off with F3
+function Toggle_ycm()
+    if g:ycm_show_diagnostics_ui == 0
+        let g:ycm_auto_trigger = 1
+        let g:ycm_show_diagnostics_ui = 1
+        :YcmRestartServer
+        :e
+        :echo "YCM on"
+    elseif g:ycm_show_diagnostics_ui == 1
+        let g:ycm_auto_trigger = 0
+        let g:ycm_show_diagnostics_ui = 0
+        :YcmRestartServer
+        :e
+        :echo "YCM off"
+    endif
+endfunction
+map <F2> :call Toggle_ycm() <CR>
+
+" turn off automatic YouCompleteMe cursor hover info
+"let g:ycm_auto_hover = ''
+map <F3> <plug>(YCMHover)
+map <F8> :YcmGenerateConfig -f -v -b qmake --qt-version 5 $PWD<CR>:CCGenerateConfig -f -v -b qmake --qt-version 5 $PWD<CR>:!cp /home/chuhu/Git/Q/analogclock/.vimscript ./<CR>
+map <F4> :YcmGenerateConfig -f -v -b make $PWD<CR>
+
+let g:color_coded_enabled = 0
+let g:color_coded_filetypes = ['cpp','c']
+
+" YCM color setup
+"highlight Pmenu    guibg=darkblue  guifg=Lime
+"highlight PmenuSel guibg=lighblue guifg=black
+" 自动关闭补全窗口
+"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+
+
+Plugin 'prabirshrestha/async.vim'
+Plugin 'prabirshrestha/asyncomplete.vim'
+Plugin 'prabirshrestha/vim-lsp'
+Plugin 'prabirshrestha/asyncomplete-lsp.vim'
+Plugin 'prabirshrestha/asyncomplete-file.vim'
+
+let g:use_ltp_server_completion = 0
+
+if g:use_ltp_server_completion
+au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
+			\ 'name': 'file',
+			\ 'whitelist': ['*'],
+			\ 'priority': 10,
+			\ 'completor': function('asyncomplete#sources#file#completor')
+			\ }))
+
+if executable('bash-language-server')
+	au User lsp_setup call lsp#register_server({
+				\ 'name': 'bash-language-server',
+				\ 'cmd': {server_info->[&shell, &shellcmdflag, 'bash-language-server start']},
+				\ 'whitelist': ['sh'],
+				\ })
+endif
+
+" vim lsp 
+inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+ 
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'whitelist': ['python'],
+        \ })
+endif
+
+endif
+
+let g:airline_left_sep='<'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_tabs = 1
+let g:airline#extensions#tabline#alt_sep = 1
+let g:airline#extensions#tabline#show_tab_count = 2
+let g:airline#extensions#tabline#show_tab_type = 1
+let g:airline#extensions#tabline#buf_label_first = 1
+let g:airline#extensions#tabline#buffers_label = 'b'
+let g:airline#extensions#tabline#tabs_label = 't'
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#show_tab_nr = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+"let g:airline#extensions#tabline#ctrlspace_show_tab_nr = 1
+let g:airline#extensions#tabline#show_splits = 1
+
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+nmap \1 <Plug>AirlineSelectTab1
+nmap \2 <Plug>AirlineSelectTab2
+nmap \3 <Plug>AirlineSelectTab3
+nmap \4 <Plug>AirlineSelectTab4
+nmap \5 <Plug>AirlineSelectTab5
+nmap \6 <Plug>AirlineSelectTab6
+nmap \7 <Plug>AirlineSelectTab7
+nmap \8 <Plug>AirlineSelectTab8
+nmap \9 <Plug>AirlineSelectTab9
+nmap \0 <Plug>AirlineSelect 1
+nmap <leader>1 :b 1<CR>
+nmap <leader>2 :b 2<CR>
+nmap <leader>3 :b 3<CR>
+nmap <leader>4 :b 4<CR>
+nmap <leader>5 :b 5<CR>
+nmap <leader>6 :b 6<CR>
+nmap <leader>7 :b 7<CR>
+nmap <leader>8 :b 8<CR>
+nmap <leader>9 :b 9<CR>
+nmap <leader>10 :b 10<CR>
+
+nmap <leader>bn :bnext<CR>
+nmap <leader>bp :bprevious<CR>
+nmap \gt :bnext<CR>
+nmap \gT :bprevious<CR>
+
+
+highlight BookmarkSign ctermbg=NONE ctermfg=160
+highlight BookmarkLine ctermbg=194 ctermfg=NONE
+let g:bookmark_sign = '♥'
+let g:bookmark_highlight_lines = 0
+
+" plugin vista
+hi default link VistaFloat Pmenu
+hi VistaFloat ctermbg=237 guibg=#3a3a3a
+let g:vista#renderer#ctags = "default"
+let g:vista_highlight_whole_line = 1
+let g:vista_sidebar_width=30
+let g:vista_default_executive = 'ctags'
+autocmd FileType vista,vista_kind nnoremap <buffer> <silent>/ :<c-u>call vista#finder#fzf#Run()<CR>
+" vista.vim
+function! NearestMethodOrFunction() abort
+	return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
+set statusline+=%{NearestMethodOrFunction()}
+
+autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+let g:vista_icon_indent = ["╰─▸ ", "├─▸ "]
+let g:vista_executive_for = {
+			\ 'php': 'coc',
+			\ }
+let g:vista_ctags_cmd = {
+			\ 'haskell': 'hasktags -x -o - -c',
+			\ }
+let g:vista_fzf_preview = ['right:50%']
+let g:vista#renderer#enable_icon = 1
+let g:vista#renderer#icons = {
+			\   "function": "\uf794",
+			\   "variable": "\uf71b",
+			\ }
+nnoremap <Space>m :<C-u>Vista!!<cr>
+
+let g:cpp_function_highlight = 1
+" Enable highlighting of C++11 attributes
+let g:cpp_attributes_highlight = 1
+" Highlight struct/class member variables (affects both C and C++ files)
+let g:cpp_member_highlight = 1
+" Put all standard C and C++ keywords under Vim's highlight group 'Statement'
+" (affects both C and C++ files)
+let g:cpp_simple_highlight = 1
+
+let g:floaterm_keymap_toggle = '<F6>'
+"let g:floaterm_width = 0.5
+"let g:floaterm_height = 0.5
+
+" Plugin gitgutter
+function! GitStatus()
+	let [a,m,r] = GitGutterGetHunkSummary()
+	return printf('+%d ~%d -%d', a, m, r)
+endfunction
+set statusline+=%{GitStatus()}
+
+colorscheme foursee
+
+:if getfsize(".vimscript")>0
+source .vimscript
+:endif
+
