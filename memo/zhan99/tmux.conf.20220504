@@ -1,0 +1,86 @@
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-urlview'
+set -g @plugin 'sainnhe/tmux-translator'
+#set -g @plugin 'knakayama/tmux-google-translate'
+set -g @plugin 'tmux-plugins/tmux-open'
+set -g @plugin 'tmux-plugins/tmux-yank'
+set -g @plugin 'tmux-plugins/tmux-copycat.git'
+
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @plugin 'tmux-plugins/tmux-pain-control'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+#set -g @plugin 'kristijanhusak/tmux-simple-git-status'
+set -g @plugin 'arl/gitmux'
+set -g @plugin 'roosta/tmux-fuzzback'
+set -g @plugin 'IngoMeyer441/tmux-easy-motion'
+set -g @plugin 'tmux-plugins/tmux-sidebar'
+
+set -g @easy-motion-prefix "Space"
+set -g @fuzzback-bind "s"
+set -g @fuzzback-popup 1
+set -g @fuzzback-popup-size '90%'
+#set -g @easy-motion-prefix-enabled 1
+#set -g @fuzzback-fzf-layout 'reverse'
+#set -g @fuzzback-table 'root'
+set -g @fuzzback-fzf-bind 'ctrl-y:execute-silent(echo -n {3..} | xsel -ib)+abort'
+
+#set -g @sidebar-tree-command 'ls -1'
+set -g @sidebar-tree-position 'left'
+set -g @sidebar-tree-command 'tree -C'
+#set -g @sidebar-tree 'e'
+#set -g @sidebar-tree-focus 'w'
+#set -g @sidebar-tree-width '60'
+
+#bind-key -T copy-mode-vi 'Y' send-keys -X copy-pipe 'xclip -in -selection clipboard'
+set -g focus-events on
+
+set -g status-left "#{simple_git_status}"
+#set -g status-right '#(gitmux "#{pane_current_path}")'
+
+set -g @urlview-key 'u'
+
+# the key to trigger translation
+set -g @tmux-translator 't'
+set -g @tmux-translator-zhtoen 'r'
+set -g @tmux-translator-clipboard-zhtoen 'R'
+set -g @tmux-translator-clipboard 'm'
+# the width of popup window
+set -g @tmux-translator-width "38%"
+# the height of popup window
+set -g @tmux-translator-height "48%"
+# translate from
+set -g @tmux-translator-from "en"
+# translate to
+set -g @tmux-translator-to "zh"
+# engine
+# multiple engines "google|youdao"
+set -g @tmux-translator-engine "google"
+
+set -g @open-B 'https://www.bing.com/search?q='
+set -g @open-S 'https://www.google.com/search?q='
+
+bind C-p previous-window
+bind C-n next-window
+
+set -g @yank_selection 'clipboard' # or 'secondary' or 'clipboard'
+set -g @yank_with_mouse on 
+set -g @yank_selection_mouse 'clipboard'
+set -g @yank_action 'copy-pipe'
+
+set -g status-right '#(gitmux "#{pane_current_path}")'
+
+#bind-key -T copy-mode-vi 'C-j' select-pane -D
+#bind-key -T copy-mode-vi 'C-k' select-pane -U
+#bind-key -T copy-mode-vi 'C-\' select-pane -l
+#bind C-l send-keys -X 'clear'
+#bind r source-file ~/.tmux.conf
+#bind -n M-Left select-pane -L
+#bind -n M-Down select-pane -D
+
+#set -g @open-editor 'C-x'
+#set -g @open 'x'
+
+run '~/.tmux/plugins/tpm/tpm'
+run-shell ~/.tmux/plugins/tmux-urlview/urlview.tmux
+
