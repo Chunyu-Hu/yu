@@ -1,0 +1,31 @@
+"languageserver": {
+	"sh": {
+		"command": "bash-language-server",
+		"args": ["start"],
+		"rootPatterns": [".bash_lsp"],
+		"ignoredRootPaths": ["~"],
+		"filetypes": ["sh"],
+		"enable": true
+	},
+	"ccls": {
+		"command": "ccls",
+		"filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+		"rootPatterns": [".ccls", "compile_commands.json"],
+		"initializationOptions": {
+			"cache": {
+				"directory": ".ccls-cache"
+			},
+			"client": {
+				"snippetSupport": true
+			}
+		},
+		"enable": false
+	}
+},
+"bashIde.includeAllWorkspaceSymbols": false,
+"bashIde.shellcheckPath": "",
+"sh.enable": false,
+"clangd.disableProgressNotifications": true,
+"clangd.enabled": true,
+"coc.source.around.priority": 0,
+"coc.source.around.enable": false
