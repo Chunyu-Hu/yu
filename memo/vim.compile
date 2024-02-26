@@ -3,5 +3,9 @@ https://github.com/vim/vim.git
 
  ./configure --with-features=huge --enable-perlinterp --enable-rubyinterp  --enable-pythoninterp --enable-python3interp --enable-luainterp  --enable-gui=gtk3 --enable-gui=gnome3 --enable-cscope --host linux-x86_64-gcc --with-x --enable-multibyte LDFLAGS=" -L/usr/lib64/perl5/CORE/ -lperl" CC=gcc CFLAGS="-DLARGFILE64_SUPPORT=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -m64 -fPIC -lperl -I/usr/lib64/perl5/CORE/"
 
+# fedora38
+# libXmu-devel
+ ./configure --with-features=huge --enable-perlinterp --enable-rubyinterp  --enable-pythoninterp --enable-python3interp --enable-luainterp  --enable-gui=auto --enable-gui=auto --enable-cscope --host linux-x86_64-gcc --with-x --enable-multibyte LDFLAGS=" -L/usr/lib64/perl5/CORE/ -lperl" CC=gcc CFLAGS="-DLARGFILE64_SUPPORT=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -m64 -fPIC -lperl -I/usr/lib64/perl5/CORE/"
+
 # this works for bash
  npm i -g bash-language-server@4.0.0
